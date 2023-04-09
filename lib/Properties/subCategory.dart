@@ -18,13 +18,13 @@ class SubCategory {
   String? name;
   String? image;
   String? description;
-  List<Category>? category;
+  final Category? category;
   factory SubCategory.fromJson(Map<dynamic, dynamic> json) => SubCategory(
         id: json['id'],
         name: json['name'],
         image: json['image'],
         description: json['description'],
-        category: json['category'],
+        category: Category.fromJson(json['category']),
       );
   Map<dynamic, dynamic> toJson() => {
         'id': id,

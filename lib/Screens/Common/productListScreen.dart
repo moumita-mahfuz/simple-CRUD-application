@@ -17,12 +17,12 @@ class ProductListScreen extends StatefulWidget {
 }
 
 class _ProductListScreenState extends State<ProductListScreen> {
-  List<Product> productlist = [];
+  late Future<List<Product>> _futureProductList;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getProduct();
+    _futureProductList = getProduct();
   }
   @override
   Widget build(BuildContext context) {
@@ -30,6 +30,15 @@ class _ProductListScreenState extends State<ProductListScreen> {
       appBar: AppBar(
         title: Text("Product List"),
         actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 15),
+            child: InkWell(
+              onTap: () => {},
+              child: Icon(
+                Icons.add, color: Colors.white,
+              ),
+            ),
+          ),
           PopupMenuButton(
             icon: const Icon(
               Icons.more_vert_rounded,
@@ -72,10 +81,43 @@ class _ProductListScreenState extends State<ProductListScreen> {
           ),
         ],
       ),
+      body: FutureBuilder (
+        future: _futureProductList,
+        builder: (context, AsyncSnapshot<List<Product>> snapshot) {
+          if(!snapshot.hasData) {
+            return Center(
+                child: const CircularProgressIndicator(
+                  color: Colors.blue,
+                ));
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+                itemBuilder:  (context, index) {
+                final item = snapshot.data![index];
+                return ListTile(
+                  leading: CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Colors.white,
+                    child: CircleAvatar(
+                      radius: 15,
+                      backgroundImage: NetworkImage(
+                        item.image.toString(),
+                      ),
+                    ),
+                  ),
+                  title: Text(item.name.toString()),
+                  subtitle: Text("Price: " + item.productPrice!.price.toString()),
+
+                );
+                });
+          }
+        },
+      ),
     );
   }
 
-  Future<void> getProduct() async {
+  Future<List<Product>> getProduct() async {
+    List<Product> productList = [];
     Dio dio = Dio();
     final prefs = await SharedPreferences.getInstance();
     var url = 'https://secure-falls-43052.herokuapp.com/api/products?page=0&size=20';
@@ -88,17 +130,18 @@ class _ProductListScreenState extends State<ProductListScreen> {
       options: Options(headers: header),
     );
    // var data = jsonDecode(response.data.toString());
+    //print("RESPONCE: " + response.toString());
     if(response.statusCode == 200) {
 
       print(response.data);
       for(Map i in response.data) {
-        productlist.add(Product.fromJson(i));
+        productList.add(Product.fromJson(i));
       }
 
      // List<Product> productlist = Product.fromJson(response.data);
 
     }
-
+    return productList;
     // Prints the raw data returned by the server
     //print('User Info: ${userData.data}');
 
