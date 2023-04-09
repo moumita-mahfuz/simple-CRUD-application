@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_crud_application/Screens/Auth/loginScreen.dart';
+import 'package:simple_crud_application/Screens/Common/productListScreen.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+  final token = prefs.getString('token') ?? false;
+  runApp(MyApp(isLoggedIn: isLoggedIn, token: token.toString()));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+  final bool isLoggedIn;
+  final String token;
+  MyApp({Key? key, required this.isLoggedIn, required this.token}) : super(key: key);
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Simple CRUD Application',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -26,7 +34,8 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: LoginScreen(),
+
+      home: isLoggedIn? ProductListScreen(token: token,) : const LoginScreen(),
     );
   }
 }
