@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,8 +22,8 @@ class _SingleProductDetailsScreenState extends State<SingleProductDetailsScreen>
 
   _delete() async {
     Dio dio = Dio(BaseOptions(
-      receiveTimeout: Duration(seconds: 5), // Wait for 5 seconds to receive a response
-      connectTimeout: Duration(seconds: 5),// Wait for 5 seconds to establish a connection with the server
+      receiveTimeout: Duration(seconds: 10), // Wait for 5 seconds to receive a response
+      connectTimeout: Duration(seconds: 10),// Wait for 5 seconds to establish a connection with the server
     ));
     final prefs = await SharedPreferences.getInstance();
     var header = {
@@ -31,20 +33,21 @@ class _SingleProductDetailsScreenState extends State<SingleProductDetailsScreen>
     int id = widget.product.id!;
     String token = prefs.getString('token').toString();
     var url = 'https://secure-falls-43052.herokuapp.com/api/products/$id';
-    try {
+
       final response = await dio.delete(url, options: Options(headers: header));
       print(response.statusCode);
-
-      if (response.statusCode == 200) {
+      if (response.statusCode.toString().startsWith('20')) {
         // do something with the fetched data
         Get.offAll(ProductListScreen(token: token));
       } else {
-        throw Exception('Failed to post data');
-      }
-    } catch (e) {
-      throw Exception('Failed to post data' + e.toString());
-    }
 
+      }
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print(widget.product.subCategory.toString()+" "+ widget.product.brand.toString());
   }
 
   @override
@@ -103,7 +106,7 @@ class _SingleProductDetailsScreenState extends State<SingleProductDetailsScreen>
             },
             child: Container(
               padding:
-              const EdgeInsets.only(left: 0, top: 10, bottom: 10, right: 10),
+              const EdgeInsets.only(left: 0, top: 10, bottom: 10, right: 20),
               //Icon(Icons.more_vert)
               child: Icon(Icons.delete_rounded, color: Colors.white),
             ),
@@ -139,7 +142,8 @@ class _SingleProductDetailsScreenState extends State<SingleProductDetailsScreen>
                     Center(
                       child: ClipRRect(
                           borderRadius: BorderRadius.circular(20.0),
-                          child: Image.network(widget.product.image!, width: 300 - (20.0 * 2))
+                          child: _showImage(widget.product!.image!),
+                          //child:
                       ),
                     ),
 
@@ -204,5 +208,15 @@ class _SingleProductDetailsScreenState extends State<SingleProductDetailsScreen>
         ],
       ),
     );
+  }
+  Widget _showImage(String imageString) {
+    if (imageString.startsWith('http') || imageString.startsWith('https')) {
+      print('The string starts with http or https.');
+      return Image.network(widget.product.image!, width: 300 - (20.0 * 2));
+    } else {
+      print('The string does not start with http or https.');
+      return Image.file(File(widget.product.image.toString()), width: 300 - (20.0 * 2));
+    }
+
   }
 }

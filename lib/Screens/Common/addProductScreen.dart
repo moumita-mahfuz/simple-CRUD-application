@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simple_crud_application/Screens/Common/productListScreen.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({Key? key}) : super(key: key);
@@ -46,13 +47,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
   ButtonStyle priceButtonStyle = ButtonStyle(
       backgroundColor: MaterialStateProperty.all(Colors.blue));
 
-  late String  name_f, barcode_f, description_f, subCategory_f, brand_f, quantity_f,
-  unit_f, unitValue_f, pastQuantity_f, price_f, unitPrice_f, mrp_f;
+  late String  name_f, barcode_f, description_f, unit_f;
+  late int subCategory_f, price_f, quantity_f,unitValue_f, pastQuantity_f, unitPrice_f, mrp_f,  brand_f;
 
   addProduct() async {
     Dio dio = Dio(BaseOptions(
-      receiveTimeout: Duration(seconds: 5), // Wait for 5 seconds to receive a response
-      connectTimeout: Duration(seconds: 5),// Wait for 5 seconds to establish a connection with the server
+      receiveTimeout: Duration(seconds: 15), // Wait for 5 seconds to receive a response
+      connectTimeout: Duration(seconds: 10),// Wait for 5 seconds to establish a connection with the server
     ));
     final prefs = await SharedPreferences.getInstance();
     var url = 'https://secure-falls-43052.herokuapp.com/api/create-products';
@@ -61,23 +62,24 @@ class _AddProductScreenState extends State<AddProductScreen> {
 //data will be the object which we want to send.
 //In my case I am sending a product to insert.
     //Product product = Product(name:'Pizza', price: 130.00);
+    String token = prefs.getString('token').toString();
     var header = {
       'Content-type': 'application/json; charset=utf-8',
       'Authorization': 'Bearer ${prefs.getString('token')}'
     };
     print("$name_f  $barcode_f  $description_f  $_image " +
-        " $subCategory_f  $brand_f  $quantity_f  $unit_f" +
+        " ${(subCategory_f)}  ${(brand_f)}  $quantity_f  $unit_f" +
         " $unitValue_f $pastQuantity_f  $price_f" + " $unitPrice_f $mrp_f" );
-    try {
+
       final response = await dio.post(
         url,
         data: {
           "name": name_f.toString(),
           "barcode": barcode_f.toString(),
           "description": description_f.toString(),
-          "image": _image.toString(),
-          "subCategory": subCategory_f,
-          "brand": brand_f,
+          "image": _image!.path.toString(),
+          "subCategory":  1851,
+          "brand": 1901,
           "quantity": {
             "quantity": quantity_f,
             "unit": unit_f.toString(),
@@ -90,28 +92,42 @@ class _AddProductScreenState extends State<AddProductScreen> {
             "mrp": mrp_f
           }
         },
+        // data: {
+        //   "name": name_f.toString(),
+        //   "barcode": barcode_f.toString(),
+        //   "description": description_f.toString(),
+        //   "image": _image!.path.toString(),
+        //   "subCategory": int.parse(subCategory_f),
+        //   "brand": int.parse(brand_f),
+        //   "quantity": {
+        //     "quantity": int.parse(quantity_f),
+        //     "unit": unit_f.toString(),
+        //     "unitValue": int.parse(unitValue_f),
+        //     "pastQuantity": int.parse(pastQuantity_f)
+        //   },
+        //   "productPrice": {
+        //     "price": int.parse(price_f),
+        //     "unitPrice": int.parse(unitPrice_f),
+        //     "mrp": int.parse(mrp_f)
+        //   }
+        // },
         options: Options(headers: header),
       );
       print(response.statusCode);
 
-      if (response.statusCode == 200) {
+      if (response.statusCode.toString().startsWith('20')) {
         setState(() {
           _circularIndicator = false;
         });
+        Get.offAll(ProductListScreen( token: token));
         final jsonData = jsonDecode(response.data);
         // do something with the fetched data
       } else {
         setState(() {
           _circularIndicator = false;
         });
-        throw Exception('Failed to post data');
+
       }
-    } catch (e) {
-      setState(() {
-        _circularIndicator = false;
-      });
-      throw Exception('Failed to post data' + e.toString());
-    }
   }
 
   @override
@@ -151,8 +167,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       name_f = nameController.text;
                       barcode_f = barcodeController.text;
                       description_f = descriptionController.text;
-                      subCategory_f = subCategoryController.text;
-                      brand_f = brandController.text;
+                      subCategory_f = int.parse(subCategoryController.text);
+                      brand_f = int.parse(brandController.text);
                       _circularIndicator = true;
                     });
                     addProduct();
@@ -303,13 +319,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
       enableDrag: false,
     );
   }
-  _quantityValueStore(String quantity, unit, unitValue, pastQuantity) {
+  _quantityValueStore(String quantity,String unit,String unitValue,String pastQuantity) {
     //quantity": 0, "unit": "string", "unitValue": 0, "pastQuantity": 0
     setState(() {
-      quantity_f = quantity;
+      quantity_f = int.parse(quantity);
       unit_f = unit;
-      unitValue_f = unitValue;
-      pastQuantity_f = pastQuantity;
+      unitValue_f = int.parse(unitValue);
+      pastQuantity_f = int.parse(pastQuantity);
     });
   }
 
@@ -380,12 +396,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  _productPriceValueStore(String price, unitPrice, mrp) {
+  _productPriceValueStore(String price,String unitPrice,String mrp) {
     //{ "price": 0, "unitPrice": 0, "mrp": 0 } }
     setState(() {
-      price_f = price;
-      unitPrice_f = unitPrice;
-      mrp_f = mrp;
+      price_f = int.parse(price);
+      unitPrice_f = int.parse(unitPrice);
+      mrp_f = int.parse(mrp);
     });
 
   }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -96,82 +97,98 @@ class _ProductListScreenState extends State<ProductListScreen> {
               color: Colors.blue,
             ));
           } else {
-            return Container(
-              padding: const EdgeInsets.all(8.0),
-              child: GridView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10.0,
-                  mainAxisSpacing: 10.0,
-                ),
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  final item = snapshot.data![index];
-                  //Single Grid
-                  return InkWell(
-                    onTap: () =>
-                        {Get.to(SingleProductDetailsScreen(product: item))},
-                    child: Column(
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: Container(
-                            height: 300,
-                            margin: const EdgeInsets.all(10.0),
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image:
-                                NetworkImage(item.image.toString()),
-                                fit: BoxFit.fill,
-                              ),
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(20.0),
-                              ),
-                            ),
+            return SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                child: GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10.0,
+                    mainAxisSpacing: 10.0,
+                  ),
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final item = snapshot.data![index];
+                    //Single Grid
+                    return InkWell(
+                      onTap: () =>
+                          {Get.to(SingleProductDetailsScreen(product: item))},
+                      child: Column(
+                        children: [
+                          Expanded(
+                            flex: 3,
                             child: Container(
-                                alignment: Alignment.bottomCenter,
-                                child: Container(
-                                  height: 25,
-                                  width: double.infinity,
-                                  decoration: const BoxDecoration(
-                                      color: Colors.black38,
-                                      borderRadius: BorderRadius.only(
-                                          bottomLeft: Radius.circular(20.0),
-                                          bottomRight: Radius.circular(20.0))),
-                                  child: Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      ('${item.productPrice!.price}'),
-                                      style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18.0),
+                              height: 300,
+                              margin: const EdgeInsets.all(10.0),
+                              // decoration: BoxDecoration(
+                              //   image: DecorationImage(
+                              //     image: _showImage(item.image.toString()),
+                              //
+                              //     fit: BoxFit.fill,
+                              //   ),
+                              //   borderRadius: const BorderRadius.all(
+                              //     Radius.circular(20.0),
+                              //   ),
+                              // ),
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    child: _showImage(item.image.toString()),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(20.0),
+                                      )
                                     ),
                                   ),
-                                )),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: Text('',
-                              // item.name!.length > 3
-                              //     ? '${item.name!.substring(0, 20)}...'
-                              //     : item.name!,
-                              style: const TextStyle(
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 12.0),
+
+                                  Container(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Container(
+                                        height: 25,
+                                        width: double.infinity,
+                                        decoration: const BoxDecoration(
+                                            color: Colors.black38,
+                                            // borderRadius: BorderRadius.only(
+                                            //     bottomLeft: Radius.circular(20.0),
+                                            //     bottomRight: Radius.circular(20.0))
+                                        ),
+                                        child: Align(
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            ('${item.productPrice!.price}'),
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18.0),
+                                          ),
+                                        ),
+                                      )),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                          Expanded(
+                            flex: 1,
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 8.0, right: 8.0),
+                              child: Text('',
+                                // item.name!.length > 3
+                                //     ? '${item.name!.substring(0, 20)}...'
+                                //     : item.name!,
+                                style: const TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 12.0),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             );
 
@@ -235,5 +252,15 @@ class _ProductListScreenState extends State<ProductListScreen> {
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool('isLoggedIn', false);
     Get.offAll(const LoginScreen());
+  }
+  Widget _showImage(String imageString) {
+    if (imageString.startsWith('http') || imageString.startsWith('https')) {
+      print('The string starts with http or https.');
+      return  Image.network(imageString, width: 300 - (20.0 * 2),fit: BoxFit.fill,);
+    } else {
+      print('The string does not start with http or https.');
+      return Image.file(File(imageString), width: 300 - (20.0 * 2),fit: BoxFit.fill,);
+    }
+
   }
 }

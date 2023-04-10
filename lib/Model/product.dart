@@ -30,6 +30,7 @@ class Product {
     required this.quantity,
     required this.productPrice,
   });
+
   int? id;
   String? name;
   String? barcode;
