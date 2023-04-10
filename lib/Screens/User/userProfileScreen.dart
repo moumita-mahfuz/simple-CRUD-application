@@ -2,15 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../Model/User.dart';
+
 class UserProfileScreen extends StatefulWidget {
   @override
   _UserProfileScreenState createState() => _UserProfileScreenState();
 }
 
-class _UserProfileScreenState extends State<UserProfileScreen> {
-  // Define a variable to store the user profile data
-  Map<String, dynamic> _userData = {};
+//{id: 1, login: admin, firstName: Administrator, lastName: Administrator,
+// email: admin@localhost.com, phone: +8801795888218, imageUrl: https://firebasestorage.googleapis.com/v0/b/inventory-51bca.appspot.com/o/test%2Fd61a99ea-32e2-4593-a2b8-131c89306f32.jpg?alt=media&token=d61a99ea-32e2-4593-a2b8-131c89306f32.jpg,
+// activated: true, langKey: en, createdBy: system, createdDate: null, lastModifiedBy: admin,
+// lastModifiedDate: 2023-03-25T14:44:13.198288Z, authorities: [ROLE_USER, ROLE_ADMIN]}
 
+class _UserProfileScreenState extends State<UserProfileScreen> {
+  //Define a variable to store user data;
+  late User _userData;
   // Define a variable to store the loading state
   bool _isLoading = true;
 
@@ -27,12 +33,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       print(response.statusCode);
       // If the response is successful, store the user profile data in the _userData variable
       if (response.statusCode == 200) {
-        print(response.statusCode);
-        print(response.data);
         setState(() {
-          _userData = response.data;
           _isLoading = false;
         });
+        print(response.statusCode);
+        print(response.data);
+        _userData = User.fromJson(response.data);
+        print(_userData.firstName);
       } else {
         throw Exception('Failed to fetch user profile data');
       }
@@ -57,41 +64,42 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       appBar: AppBar(
         title: Text('User Profile'),
       ),
-      // body: _isLoading
-      //     ? Center(child: CircularProgressIndicator())
-      //     : Column(
-      //   children: [
-      //     SizedBox(height: 16),
-      //     CircleAvatar(
-      //       radius: 64,
-      //       backgroundImage: NetworkImage(_userData['avatar']),
-      //     ),
-      //     SizedBox(height: 16),
-      //     Text(
-      //       _userData['name'],
-      //       style: TextStyle(
-      //         fontSize: 24,
-      //         fontWeight: FontWeight.bold,
-      //       ),
-      //     ),
-      //     SizedBox(height: 8),
-      //     Text(
-      //       _userData['email'],
-      //       style: TextStyle(
-      //         fontSize: 16,
-      //       ),
-      //     ),
-      //     SizedBox(height: 16),
-      //     ListTile(
-      //       leading: Icon(Icons.phone),
-      //       title: Text(_userData['phone']),
-      //     ),
-      //     ListTile(
-      //       leading: Icon(Icons.location_on),
-      //       title: Text(_userData['address']),
-      //     ),
-      //   ],
-      // ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+        children: [
+          SizedBox(height: 16),
+          CircleAvatar(
+            radius: 64,
+            backgroundImage: NetworkImage(_userData.imageUrl.toString()),
+          ),
+          SizedBox(height: 16),
+          Text(
+            _userData.firstName.toString() +" " + _userData.lastName.toString(),
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            _userData.email.toString(),
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+          SizedBox(height: 16),
+          ListTile(
+            leading: Icon(Icons.phone),
+            title: Text(_userData.phone.toString()),
+          ),
+          ListTile(
+            leading: Icon(Icons.language),
+            title: Text(_userData.langKey.toString()),
+          ),
+        ],
+      ),
     );
   }
+
 }
