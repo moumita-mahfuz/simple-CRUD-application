@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_crud_application/Screens/Auth/loginScreen.dart';
+import 'package:simple_crud_application/Screens/Common/addProductScreen.dart';
+import 'package:simple_crud_application/Screens/Common/singleProductDetailsScreen.dart';
+import 'package:simple_crud_application/Screens/User/userProfileScreen.dart';
 
 import '../../Model/product.dart';
 
@@ -24,6 +27,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
     super.initState();
     _futureProductList = getProduct();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,9 +37,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
           Padding(
             padding: EdgeInsets.only(right: 15),
             child: InkWell(
-              onTap: () => {},
+              onTap: () => {Get.to(AddProductScreen())},
               child: Icon(
-                Icons.add, color: Colors.white,
+                Icons.add,
+                color: Colors.white,
               ),
             ),
           ),
@@ -52,7 +57,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     children: const [
                       Icon(
                         Icons.account_circle_rounded,
-                        //color: Color(0xFF926AD3),
+                        color: Colors.blue,
                       ),
                       Text(" Profile"),
                     ],
@@ -64,7 +69,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     children: const [
                       Icon(
                         Icons.logout,
-                        //color: Color(0xFF926AD3),
+                        color: Colors.blue,
                       ),
                       Text(" Logout"),
                     ],
@@ -74,6 +79,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
             },
             onSelected: (value) async {
               if (value == 0) {
+                Get.to(UserProfileScreen());
               } else if (value == 1) {
                 logout();
               }
@@ -81,47 +87,132 @@ class _ProductListScreenState extends State<ProductListScreen> {
           ),
         ],
       ),
-      body: FutureBuilder (
+      body: FutureBuilder(
         future: _futureProductList,
         builder: (context, AsyncSnapshot<List<Product>> snapshot) {
-          if(!snapshot.hasData) {
-            return Center(
-                child: const CircularProgressIndicator(
-                  color: Colors.blue,
-                ));
+          if (!snapshot.hasData) {
+            return const Center(
+                child: CircularProgressIndicator(
+              color: Colors.blue,
+            ));
           } else {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-                itemBuilder:  (context, index) {
-                final item = snapshot.data![index];
-                return ListTile(
-                  leading: CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Colors.white,
-                    child: CircleAvatar(
-                      radius: 15,
-                      backgroundImage: NetworkImage(
-                        item.image.toString(),
-                      ),
+            return Container(
+              padding: const EdgeInsets.all(8.0),
+              child: GridView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10.0,
+                  mainAxisSpacing: 10.0,
+                ),
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  final item = snapshot.data![index];
+                  //Single Grid
+                  return InkWell(
+                    onTap: () =>
+                        {Get.to(SingleProductDetailsScreen(product: item))},
+                    child: Column(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Container(
+                            height: 300,
+                            margin: const EdgeInsets.all(10.0),
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image:
+                                NetworkImage(item.image.toString()),
+                                fit: BoxFit.fill,
+                              ),
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(20.0),
+                              ),
+                            ),
+                            child: Container(
+                                alignment: Alignment.bottomCenter,
+                                child: Container(
+                                  height: 25,
+                                  width: double.infinity,
+                                  decoration: const BoxDecoration(
+                                      color: Colors.black38,
+                                      borderRadius: BorderRadius.only(
+                                          bottomLeft: Radius.circular(20.0),
+                                          bottomRight: Radius.circular(20.0))),
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      ('${item.productPrice!.price}'),
+                                      style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18.0),
+                                    ),
+                                  ),
+                                )),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 8.0, right: 8.0),
+                            child: Text('',
+                              // item.name!.length > 3
+                              //     ? '${item.name!.substring(0, 20)}...'
+                              //     : item.name!,
+                              style: const TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 12.0),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  title: Text(item.name.toString()),
-                  subtitle: Text("Price: " + item.productPrice!.price.toString()),
+                  );
+                },
+              ),
+            );
 
-                );
-                });
+            // return ListView.builder(
+            //     itemCount: snapshot.data!.length,
+            //     itemBuilder: (context, index) {
+            //       final item = snapshot.data![index];
+            //       return InkWell(
+            //         onTap: () => SingleProductDetailsScreen(product: item,),
+            //         child: ListTile(
+            //           leading: CircleAvatar(
+            //             radius: 20,
+            //             backgroundColor: Colors.white,
+            //             child: CircleAvatar(
+            //               radius: 15,
+            //               backgroundImage: NetworkImage(
+            //                 item.image.toString(),
+            //               ),
+            //             ),
+            //           ),
+            //           title: Text(item.name.toString()),
+            //           subtitle:
+            //               Text("Price: ${item.productPrice!.price}"),
+            //         ),
+            //       );
+            //     });
           }
         },
       ),
     );
   }
 
+  ///get future product list
   Future<List<Product>> getProduct() async {
     List<Product> productList = [];
     Dio dio = Dio();
     final prefs = await SharedPreferences.getInstance();
-    var url = 'https://secure-falls-43052.herokuapp.com/api/products?page=0&size=20';
-    var header = {'Content-type': 'application/json; charset=utf-8',
+    var url =
+        'https://secure-falls-43052.herokuapp.com/api/products?page=0&size=20';
+    var header = {
+      'Content-type': 'application/json; charset=utf-8',
       'Authorization': 'Bearer ${prefs.getString('token')}'
     };
     // Perform GET request to the endpoint "/users/<id>"
@@ -129,27 +220,17 @@ class _ProductListScreenState extends State<ProductListScreen> {
       url,
       options: Options(headers: header),
     );
-   // var data = jsonDecode(response.data.toString());
+    // var data = jsonDecode(response.data.toString());
     //print("RESPONCE: " + response.toString());
-    if(response.statusCode == 200) {
-
+    if (response.statusCode == 200) {
       print(response.data);
-      for(Map i in response.data) {
+      for (Map i in response.data) {
         productList.add(Product.fromJson(i));
       }
-
-     // List<Product> productlist = Product.fromJson(response.data);
-
     }
     return productList;
-    // Prints the raw data returned by the server
-    //print('User Info: ${userData.data}');
-
-    // Parsing the raw JSON data to the User class
-   // User user = User.fromJson(userData.data);
-
-    //return user;
   }
+
   logout() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool('isLoggedIn', false);
