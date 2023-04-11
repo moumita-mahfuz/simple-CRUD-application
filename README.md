@@ -1,5 +1,7 @@
  # simple CRUD application
- A new Flutter project.
+ A simple CRUD application.
+ Features:
+Login, View Product List, View product details, Add new product, User profile & Logout.
 
  ## Getting Started
 **Packages we are using:**
