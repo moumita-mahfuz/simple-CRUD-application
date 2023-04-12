@@ -115,77 +115,130 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     return InkWell(
                       onTap: () =>
                           {Get.to(SingleProductDetailsScreen(product: item))},
-                      child: Column(
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: Container(
-                              height: 300,
-                              margin: const EdgeInsets.all(10.0),
-                              // decoration: BoxDecoration(
-                              //   image: DecorationImage(
-                              //     image: _showImage(item.image.toString()),
-                              //
-                              //     fit: BoxFit.fill,
-                              //   ),
-                              //   borderRadius: const BorderRadius.all(
-                              //     Radius.circular(20.0),
-                              //   ),
-                              // ),
-                              child: Stack(
-                                children: [
-                                  Container(
-                                    child: _showImage(item.image.toString()),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(20.0),
-                                      )
+                      child: Container(
+                        height: 450,
+                        color: Colors.blue,
+                        // margin: const EdgeInsets.all(10.0),
+                        // decoration: BoxDecoration(
+                        //   image: DecorationImage(
+                        //     image: _showImage(item.image.toString()),
+                        //
+                        //     fit: BoxFit.fill,
+                        //   ),
+                        //   borderRadius: const BorderRadius.all(
+                        //     Radius.circular(20.0),
+                        //   ),
+                        // ),
+                        child: Stack(
+                          children: [
+                            Container(
+                              height: 450,
+                              child: _showImage(item.image.toString()),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(20.0),
+                                  )
+                              ),
+                            ),
+
+                            Container(
+                                alignment: Alignment.bottomCenter,
+                                child: Container(
+                                  height: 25,
+                                  width: double.infinity,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.black38,
+                                    // borderRadius: BorderRadius.only(
+                                    //     bottomLeft: Radius.circular(20.0),
+                                    //     bottomRight: Radius.circular(20.0))
+                                  ),
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      ('${item.productPrice!.price}'),
+                                      style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18.0),
                                     ),
                                   ),
-
-                                  Container(
-                                      alignment: Alignment.bottomCenter,
-                                      child: Container(
-                                        height: 25,
-                                        width: double.infinity,
-                                        decoration: const BoxDecoration(
-                                            color: Colors.black38,
-                                            // borderRadius: BorderRadius.only(
-                                            //     bottomLeft: Radius.circular(20.0),
-                                            //     bottomRight: Radius.circular(20.0))
-                                        ),
-                                        child: Align(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            ('${item.productPrice!.price}'),
-                                            style: const TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18.0),
-                                          ),
-                                        ),
-                                      )),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Padding(
-                              padding: EdgeInsets.only(left: 8.0, right: 8.0),
-                              child: Text('',
-                                // item.name!.length > 3
-                                //     ? '${item.name!.substring(0, 20)}...'
-                                //     : item.name!,
-                                style: const TextStyle(
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 12.0),
-                              ),
-                            ),
-                          ),
-                        ],
+                                )),
+                          ],
+                        ),
                       ),
+                      // child: Column(
+                      //   children: [
+                      //     Expanded(
+                      //       flex: 3,
+                      //       child: Container(
+                      //         height: 400,
+                      //        color: Colors.blue,
+                      //        // margin: const EdgeInsets.all(10.0),
+                      //         // decoration: BoxDecoration(
+                      //         //   image: DecorationImage(
+                      //         //     image: _showImage(item.image.toString()),
+                      //         //
+                      //         //     fit: BoxFit.fill,
+                      //         //   ),
+                      //         //   borderRadius: const BorderRadius.all(
+                      //         //     Radius.circular(20.0),
+                      //         //   ),
+                      //         // ),
+                      //         child: Stack(
+                      //           children: [
+                      //             Container(
+                      //               height: 400,
+                      //               child: _showImage(item.image.toString()),
+                      //               decoration: BoxDecoration(
+                      //                 borderRadius: BorderRadius.all(
+                      //                   Radius.circular(20.0),
+                      //                 )
+                      //               ),
+                      //             ),
+                      //
+                      //             Container(
+                      //                 alignment: Alignment.bottomCenter,
+                      //                 child: Container(
+                      //                   height: 25,
+                      //                   width: double.infinity,
+                      //                   decoration: const BoxDecoration(
+                      //                       color: Colors.black38,
+                      //                       // borderRadius: BorderRadius.only(
+                      //                       //     bottomLeft: Radius.circular(20.0),
+                      //                       //     bottomRight: Radius.circular(20.0))
+                      //                   ),
+                      //                   child: Align(
+                      //                     alignment: Alignment.center,
+                      //                     child: Text(
+                      //                       ('${item.productPrice!.price}'),
+                      //                       style: const TextStyle(
+                      //                           color: Colors.white,
+                      //                           fontWeight: FontWeight.bold,
+                      //                           fontSize: 18.0),
+                      //                     ),
+                      //                   ),
+                      //                 )),
+                      //           ],
+                      //         ),
+                      //       ),
+                      //     ),
+                      //     Expanded(
+                      //       flex: 1,
+                      //       child: Padding(
+                      //         padding: EdgeInsets.only(left: 8.0, right: 8.0),
+                      //         child: Text('',
+                      //           // item.name!.length > 3
+                      //           //     ? '${item.name!.substring(0, 20)}...'
+                      //           //     : item.name!,
+                      //           style: const TextStyle(
+                      //               color: Colors.blue,
+                      //               fontWeight: FontWeight.normal,
+                      //               fontSize: 12.0),
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                     );
                   },
                 ),
@@ -259,7 +312,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
       return  Image.network(imageString, width: 300 - (20.0 * 2),fit: BoxFit.fill,);
     } else {
       print('The string does not start with http or https.');
-      return Image.file(File(imageString), width: 300 - (20.0 * 2),fit: BoxFit.fill,);
+      return Image.asset('assets/images/kameez-kurtis.jpg', width: 300 - (20.0 * 2),fit: BoxFit.cover,);
     }
 
   }

@@ -215,7 +215,7 @@ class _SingleProductDetailsScreenState extends State<SingleProductDetailsScreen>
       return Image.network(widget.product.image!, width: 300 - (20.0 * 2));
     } else {
       print('The string does not start with http or https.');
-      return Image.file(File(widget.product.image.toString()), width: 300 - (20.0 * 2));
+      return Image.asset(('assets/images/kameez-kurtis.jpg'), width: 300 - (20.0 * 2));
     }
 
   }
